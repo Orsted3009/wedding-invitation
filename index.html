@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wedding Invitation</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:'Poppins',sans-serif;
+    background:#F9F3E6;
+    color:#8B7355;
+    overflow-x:hidden;
+}
+
+/* ===== MÀN HÌNH MỞ THIỆP ===== */
+.open-screen{
+    position:fixed;
+    width:100%;
+    height:100vh;
+    background:linear-gradient(135deg,#F5E6D3,#E8D7C3);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+    transition:1s;
+}
+
+.card{
+    width:320px;
+    height:200px;
+    background:white;
+    position:relative;
+    perspective:1000px;
+    border-radius:10px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.1);
+}
+
+.flap{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:#D4A574;
+    transform-origin:left;
+    transition:1s;
+    border-radius:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:'Great Vibes',cursive;
+    font-size:28px;
+    color:white;
+    cursor:pointer;
+}
+
+.card.open .flap{
+    transform:rotateY(-180deg);
+}
+
+/* ===== NỘI DUNG CHÍNH ===== */
+.section{
+    padding:80px 20px;
+    text-align:center;
+}
+
+.title{
+    font-family:'Great Vibes',cursive;
+    font-size:60px;
+}
+
+.names{
+    font-size:28px;
+    margin:20px 0;
+    font-weight:600;
+}
+
+.countdown{
+    font-size:15px;
+    margin-top:15px;
+}
+
+.btn{
+    display:inline-block;
+    padding:12px 25px;
+    margin-top:20px;
+    background:#C49B6E;
+    color:white;
+    text-decoration:none;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+.music-btn{
+    position:fixed;
+    top:15px;
+    right:15px;
+    background:#8B7355;
+}
+
+/* Gallery */
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-top:30px;
+}
+
+.gallery img{
+    width:100%;
+    border-radius:15px;
+    transition:0.4s;
+}
+
+.gallery img:hover{
+    transform:scale(1.05);
+}
+
+/* Calendar */
+.save-day-title{
+    font-family:'Great Vibes',cursive;
+    font-size:48px;
+    color:#E75480;
+    margin-bottom:20px;
+    text-shadow:2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.calendar-container{
+    max-width:400px;
+    margin:20px auto;
+    padding:20px;
+    background:rgba(255,255,255,0.6);
+    border-radius:12px;
+}
+
+.calendar-header{
+    font-size:24px;
+    font-weight:600;
+    color:#8B7355;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.calendar-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+    margin-bottom:16px;
+}
+
+.calendar-day-name{
+    text-align:center;
+    font-weight:600;
+    color:#C49B6E;
+    padding:8px;
+    font-size:12px;
+}
+
+.calendar-day{
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:8px;
+    background:#F5E6D3;
+    color:#8B7355;
+    font-weight:500;
+    cursor:default;
+    position:relative;
+}
+
+.calendar-day.other-month{
+    color:#ddd;
+    background:#fafafa;
+}
+
+.calendar-day.highlight{
+    background:#E75480;
+    color:white;
+    font-weight:700;
+    font-size:18px;
+    box-shadow:0 0 0 3px rgba(231,84,128,0.3);
+}
+
+/* Family Section */
+.family-container{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+    margin:30px 0;
+    max-width:900px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.family-side{
+    text-align:center;
+    padding:20px 15px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.5);
+}
+
+.family-side h3{
+    font-family:'Great Vibes',cursive;
+    font-size:32px;
+    margin-bottom:10px;
+    color:#8B7355;
+}
+
+.family-side .side-name{
+    font-size:24px;
+    font-weight:600;
+    color:#C49B6E;
+    margin:10px 0;
+}
+
+.family-side .parents{
+    font-size:15px;
+    color:#8B7355;
+    line-height:1.8;
+    margin-top:10px;
+}
+
+.family-side .address{
+    font-size:13px;
+    color:#888;
+    margin-top:8px;
+    font-style:italic;
+}
+
+@media(max-width:768px){
+    .family-container{
+        grid-template-columns:1fr;
+        gap:20px;
+    }
+}
+
+/* RSVP */
+.rsvp{
+    max-width:400px;
+    margin:auto;
+}
+
+.rsvp input, .rsvp textarea{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:12px;
+    border:1px solid #ddd;
+}
+
+/* Venue framed card */
+.rsvp input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:12px;
+    border:1px solid #ddd;
+    border:1px solid rgba(196,155,110,0.15);
+    position:relative;
+}
+
+.framed-section::before{
+    content:'';
+    position:absolute;
+    left:-18px; top:8px;
+    width:12px; height:12px;
+    background:#E75480;
+    border-radius:50%;
+    box-shadow:0 0 0 6px rgba(231,84,128,0.06);
+}
+
+.framed-section .venue-title{
+    font-family:'Great Vibes',cursive;
+    color:#E75480;
+    font-size:28px;
+    margin-bottom:6px;
+}
+
+/* Hoa rơi */
+.flower{
+    position:fixed;
+    top:-10px;
+    font-size:20px;
+    animation:fall linear infinite;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(100vh);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NHẠC -->
+<audio id="bgMusic" loop>
+  <source src="nhac-cuoi.mp3" type="audio/mpeg">
+</audio>
+
+<button class="btn music-btn" onclick="toggleMusic()">🎵 Nhạc</button>
+
+<!-- MÀN HÌNH MỞ -->
+<div class="open-screen" id="openScreen">
+    <div class="card" id="card">
+        <div class="flap" onclick="openCard()">
+            Mở Thiệp 💌
+        </div>
+    </div>
+</div>
+
+
+<!-- NỘI DUNG -->
+<div id="mainContent" style="display:none">
+
+<section class="section">
+    <div class="title">Thiệp cưới</div>
+
+    <div class="family-container">
+        <div class="family-side">
+            <h3>Chú Rể</h3>
+            <div class="side-name" id="groomName">Sopanat Vanichpoonphon</div>
+            <div class="parents"><strong>Nhà Trai:</strong><br><span id="groomParents">Ông: Somsak Vanichpoonphon<br>Bà: Sugunya Vanichpoonphon</span></div>
+            <div class="address" id="groomAddress">Chatujak, Bangkok, Thailand</div>
+        </div>
+        <div class="family-side">
+            <h3>Cô Dâu</h3>
+            <div class="side-name" id="brideName">Phạm Thị Trường Vỹ</div>
+            <div class="parents"><strong>Nhà Gái:</strong><br><span id="brideParents">Ông: Phạm Văn Thôi<br>Bà: Phan Thị Kiều Oanh</span></div>
+            <div class="address" id="brideAddress">85 Lý Nam Đế, P.Kim Long, TP.Huế</div>
+        </div>
+    </div>
+    <h2>Trân trọng báo tin<br>Lễ Thành Hôn của</h2>
+    <div style="font-size:24px;margin:20px 0;">
+        Sopanat 💕 Trường Vỹ
+    </div>
+    <h2>Lễ Vu Quy diễn ra vào lúc:</h2>
+    <h1 style="margin-top:12px;">08:30 | 30.07.2026</h1>
+    <div class="countdown" id="countdown"></div>
+    <h3>Tại: Tư gia</h3>
+</section>
+<section class="section framed-section">    
+    <h2>Trân trọng kính mời<br>tham dự tiệc mừng<br>Lễ Vu Quy</h2>
+    <h1 style="margin-top:12px;font-size:32px;">11:30 | 30.07.2026</h1>
+    <div class="countdown" id="countdown"></div>
+    <h3 style="margin-top:8px;">Tại: Nhà hàng Nam Châu Hội Quán</h3>
+    <div style="height:10px"></div>
+    <h4 style="margin-top:6px;color:#8B7355">Địa điểm tổ chức</h4>
+    <p style="color:#6b5a45">Nhà hàng tiệc cưới Nam Châu Hội Quán<br>04 Kim Long - 07 Vạn Xuân, TP.Huế</p>
+    <a class="btn" href="https://www.google.com/maps/place/07+V%E1%BA%A1n+Xu%C3%A2n,+Kim+Long,+Hu%E1%BA%BF,+Th%C3%A0nh+ph%E1%BB%91+Hu%E1%BA%BF+49000,+Vi%E1%BB%87t+Nam/@16.4614515,107.5655921,17z/data=!3m1!4b1!4m6!3m5!1s0x3141a6c9f7956d35:0xfe8f4d71f8d35dd9!8m2!3d16.4614515!4d107.568167!16s%2Fg%2F11j6zyg077?entry=ttu&g_ep=EgoyMDI2MDMwMS4xIKXMDSoASAFQAw%3D%3D" target="_blank">📍 Xem bản đồ</a>
+</section>
+<section class="section">
+    <div class="save-day-title">Save The Day</div>
+    <p style="color:#C49B6E;margin-bottom:12px;">Chúng ta sẽ cùng nhau viết nên trang mới của hạnh phúc...</p>
+    <div class="calendar-container">
+        <div class="calendar-header">Tháng 7 - 2026</div>
+        <div class="calendar-grid" id="calendar"></div>
+    </div>
+</section>
+
+<section class="section">
+    <h2>Album cưới</h2>
+    <div class="gallery">
+        <!-- THAY LINK ẢNH CỦA BẠN -->
+        <img src="pic1.jpg">
+        <img src="pic2.jpg">
+        <img src="pic3.jpg">
+        
+    </div>
+</section>
+
+
+
+<section class="section">
+    <h2>Xác nhận tham dự</h2>
+    <form name="rsvp" method="POST" data-netlify="true" class="rsvp">
+        <input type="hidden" name="form-name" value="rsvp">
+        <input id="rsvpName" name="name" type="text" placeholder="Tên của bạn" required>
+        <input id="rsvpCount" name="count" type="number" min="0" placeholder="Số người tham dự" required>
+        <button type="submit" class="btn">Gửi xác nhận</button>
+        <div id="formMessage" style="margin-top:10px;color:#8B7355"></div>
+    </form>
+</section>
+
+</div>
+
+<script>
+// Mở thiệp
+function openCard(){
+    document.getElementById("card").classList.add("open");
+    setTimeout(()=>{
+        document.getElementById("openScreen").style.display="none";
+        document.getElementById("mainContent").style.display="block";
+        document.getElementById("bgMusic").play();
+    },1000);
+}
+
+
+
+// Nhạc
+var music=document.getElementById("bgMusic");
+function toggleMusic(){
+    if(music.paused){
+        music.play();
+    }else{
+        music.pause();
+    }
+}
+
+// Countdown
+var weddingDate=new Date("July 30, 2026 08:30:00").getTime();
+setInterval(function(){
+    var now=new Date().getTime();
+    var distance=weddingDate-now;
+    var days=Math.floor(distance/(1000*60*60*24));
+    var hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+    var minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+    var seconds=Math.floor((distance%(1000*60))/1000);
+    document.getElementById("countdown").innerHTML=
+        "Còn "+days+" ngày "+hours+" giờ "+minutes+" phút "+seconds+" giây";
+},1000);
+
+// Hoa rơi nhiều màu
+const flowers=["🌸"];
+for(let i=0;i<25;i++){
+    let flower=document.createElement("div");
+    flower.className="flower";
+    flower.innerHTML=flowers[Math.floor(Math.random()*flowers.length)];
+    flower.style.left=Math.random()*100+"vw";
+    flower.style.fontSize=(14+Math.random()*20)+"px";
+    flower.style.opacity=0.85 - Math.random()*0.5;
+    flower.style.animationDuration=(4+Math.random()*7)+"s";
+    flower.style.transform=`rotate(${Math.random()*360}deg)`;
+    flower.style.filter=`hue-rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(flower);
+}
+
+// Tạo lịch tháng 7/2026 với ngày 30 được khoanh tròn
+function generateCalendar(){
+    const year = 2026;
+    const month = 6; // Tháng 7 (0-indexed)
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const container = document.getElementById('calendar');
+    if(!container) return;
+    
+    // Thêm tên ngày trong tuần
+    const dayNames = ['CN','T2','T3','T4','T5','T6','T7'];
+    dayNames.forEach(day => {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day-name';
+        dayEl.textContent = day;
+        container.appendChild(dayEl);
+    });
+    
+    // Thêm các ngày từ tháng trước
+    for(let i = 0;i < firstDay; i++){
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day other-month';
+        dayEl.textContent = new Date(year, month, 1 - (firstDay - i)).getDate();
+        container.appendChild(dayEl);
+    }
+    
+    // Thêm các ngày trong tháng
+    for(let day = 1; day <= daysInMonth; day++){
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        if(day === 30) dayEl.classList.add('highlight');
+        dayEl.textContent = day;
+        container.appendChild(dayEl);
+    }
+    
+    // Thêm các ngày từ tháng sau
+    const totalCells = container.children.length - 7; // Trừ header
+    const remainingCells = 42 - totalCells; // 6 hàng x 7 cột
+    for(let day = 1; day <= remainingCells; day++){
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day other-month';
+        dayEl.textContent = day;
+        container.appendChild(dayEl);
+    }
+}
+generateCalendar();
+
+// Netlify form submit handler: save locally and POST to site (Netlify will capture submissions)
+;(function(){
+    const form = document.querySelector('form[name="rsvp"]');
+    if(!form) return;
+    form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        const fd = new FormData(form);
+        const entry = { name: fd.get('name'), count: fd.get('count'), time: new Date().toISOString() };
+
+        // Local backup
+        try{
+            const arr = JSON.parse(localStorage.getItem('rsvps')||'[]');
+            arr.push(entry);
+            localStorage.setItem('rsvps', JSON.stringify(arr));
+        }catch(_){ /* ignore */ }
+
+        // Submit to Netlify by posting to the site's root
+        try{
+            const res = await fetch(window.location.pathname, { method: 'POST', body: fd });
+            document.getElementById('formMessage').textContent = 'Cảm ơn! Xác nhận đã gửi.';
+            form.reset();
+        }catch(err){
+            document.getElementById('formMessage').textContent = 'Đã lưu cục bộ. Không thể gửi lên server ngay bây giờ.';
+        }
+    });
+})();
+
+// RSVP handling: save to localStorage
+// ================= GOOGLE SHEET LINK =================
+// DÁN LINK WEB APP GOOGLE SCRIPT VÀO ĐÂY
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbz1Cdv7vB5DOum649Al2o_Ungn2VxrsoUDHPzhpYxpCS7g0ZZbtaaK5mCj6BB4pn_7w/exec";
+// ================= GỬI RSVP LÊN GOOGLE SHEET =================
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const data = JSON.parse(e.postData.contents);
+
+  sheet.appendRow([
+    new Date(),
+    data.name,
+    data.count,
+    data.message
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Thêm đoạn này để tránh lỗi khi mở link trực tiếp
+function doGet(e) {
+  return ContentService
+    .createTextOutput("Wedding RSVP Web App is running")
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+</script>
+
+</body>
+</html>
