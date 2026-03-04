@@ -252,6 +252,60 @@ body{
     border:1px solid #ddd;
 }
 
+.rsvp .btn[disabled]{
+    opacity:0.7;
+    cursor:not-allowed;
+}
+
+.loading-spinner{
+    display:inline-block;
+    width:14px;
+    height:14px;
+    border:2px solid rgba(255,255,255,0.5);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    vertical-align:middle;
+    margin-left:8px;
+}
+
+@keyframes spin{
+    to{ transform:rotate(360deg); }
+}
+
+.popup-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.35);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:10000;
+}
+
+.popup-overlay.show{
+    display:flex;
+}
+
+.popup-card{
+    width:min(92vw,360px);
+    background:#fff;
+    border-radius:14px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+
+.popup-card h3{
+    margin-bottom:8px;
+    color:#8B7355;
+}
+
+.popup-card p{
+    color:#6b5a45;
+    margin-bottom:14px;
+}
+
 /* Venue framed card */
 .rsvp input{
     width:100%;
@@ -379,14 +433,21 @@ body{
 
 <section class="section">
     <h2>Xác nhận tham dự</h2>
-    <form name="rsvp" method="POST" data-netlify="true" class="rsvp">
-        <input type="hidden" name="form-name" value="rsvp">
+    <form name="rsvp" method="POST" class="rsvp">
         <input id="rsvpName" name="name" type="text" placeholder="Tên của bạn" required>
         <input id="rsvpCount" name="count" type="number" min="0" placeholder="Số người tham dự" required>
-        <button type="submit" class="btn">Gửi xác nhận</button>
+        <button type="submit" class="btn" id="rsvpSubmitBtn">Gửi xác nhận</button>
         <div id="formMessage" style="margin-top:10px;color:#8B7355"></div>
     </form>
 </section>
+
+<div id="successPopup" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+    <div class="popup-card">
+        <h3 id="successTitle">Gửi thành công 🎉</h3>
+        <p id="successText">Cảm ơn bạn đã xác nhận tham dự!</p>
+        <button type="button" class="btn" id="closeSuccessPopup">Xác nhận</button>
+    </div>
+</div>
 
 </div>
 
@@ -488,60 +549,107 @@ function generateCalendar(){
 }
 generateCalendar();
 
-// Netlify form submit handler: save locally and POST to site (Netlify will capture submissions)
+// ================= GOOGLE SHEET LINK =================
+// DÁN LINK WEB APP GOOGLE SCRIPT VÀO ĐÂY
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzpW5QWxVHZBwKMkUDT5hSLIJaAxYqazJLRPv8nFMYnHivEabT65Zl1y7Az3AicF4vk9A/exec";
+
+// Gửi RSVP lên Google Sheet (qua Apps Script Web App)
 ;(function(){
     const form = document.querySelector('form[name="rsvp"]');
-    if(!form) return;
+    const msg = document.getElementById('formMessage');
+    const submitBtn = document.getElementById('rsvpSubmitBtn');
+    const popup = document.getElementById('successPopup');
+    const popupTitle = document.getElementById('successTitle');
+    const popupText = document.getElementById('successText');
+    const closePopupBtn = document.getElementById('closeSuccessPopup');
+    if(!form || !msg || !submitBtn || !popup || !popupTitle || !popupText || !closePopupBtn) return;
+
+    const defaultBtnText = submitBtn.textContent;
+    let isSubmitting = false;
+
+    function setLoading(loading){
+        if(loading){
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Đang gửi<span class="loading-spinner" aria-hidden="true"></span>';
+            msg.textContent = 'Đang gửi xác nhận...';
+            return;
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = defaultBtnText;
+    }
+
+    function openSuccessPopup(title, text){
+        popupTitle.textContent = title;
+        popupText.textContent = text;
+        popup.classList.add('show');
+    }
+
+    function closeSuccessPopup(){
+        popup.classList.remove('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    closePopupBtn.addEventListener('click', closeSuccessPopup);
+    popup.addEventListener('click', function(ev){
+        if(ev.target === popup) closeSuccessPopup();
+    });
+
     form.addEventListener('submit', async function(e){
         e.preventDefault();
+        if(isSubmitting) return;
+        isSubmitting = true;
+        setLoading(true);
+
         const fd = new FormData(form);
-        const entry = { name: fd.get('name'), count: fd.get('count'), time: new Date().toISOString() };
+        const entry = {
+            name: String(fd.get('name') || '').trim(),
+            count: Number(fd.get('count') || 0)
+        };
 
-        // Local backup
-        try{
-            const arr = JSON.parse(localStorage.getItem('rsvps')||'[]');
-            arr.push(entry);
-            localStorage.setItem('rsvps', JSON.stringify(arr));
-        }catch(_){ /* ignore */ }
+        if(!SHEET_URL || SHEET_URL.includes('DÁN_LINK')){
+            msg.textContent = 'Đã lưu cục bộ. Vui lòng cấu hình SHEET_URL để gửi lên Google Sheet.';
+            setLoading(false);
+            isSubmitting = false;
+            return;
+        }
 
-        // Submit to Netlify by posting to the site's root
         try{
-            const res = await fetch(window.location.pathname, { method: 'POST', body: fd });
-            document.getElementById('formMessage').textContent = 'Cảm ơn! Xác nhận đã gửi.';
+            const res = await fetch(SHEET_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(entry)
+            });
+
+            if(!res.ok) throw new Error('Request failed');
+            const result = await res.json();
+
+            if(result && result.duplicate){
+                msg.textContent = 'Bạn đã đăng ký trước đó với cùng thông tin.';
+                openSuccessPopup('Đã đăng ký', 'Bạn đã đăng ký trước đó với cùng tên và số lượng.');
+                return;
+            }
+
+            // Local backup only when new registration is accepted
+            try{
+                const arr = JSON.parse(localStorage.getItem('rsvps') || '[]');
+                arr.push(entry);
+                localStorage.setItem('rsvps', JSON.stringify(arr));
+            }catch(_){ /* ignore */ }
+
+            msg.textContent = 'Cảm ơn! Xác nhận đã gửi lên Google Sheet.';
             form.reset();
+            openSuccessPopup('Gửi thành công 🎉', 'Cảm ơn bạn đã xác nhận tham dự!');
         }catch(err){
-            document.getElementById('formMessage').textContent = 'Đã lưu cục bộ. Không thể gửi lên server ngay bây giờ.';
+            msg.textContent = 'Đã lưu cục bộ. Không thể gửi lên Google Sheet ngay bây giờ.';
+        }finally{
+            setLoading(false);
+            isSubmitting = false;
         }
     });
 })();
 
-// RSVP handling: save to localStorage
 // ================= GOOGLE SHEET LINK =================
-// DÁN LINK WEB APP GOOGLE SCRIPT VÀO ĐÂY
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbz1Cdv7vB5DOum649Al2o_Ungn2VxrsoUDHPzhpYxpCS7g0ZZbtaaK5mCj6BB4pn_7w/exec";
 // ================= GỬI RSVP LÊN GOOGLE SHEET =================
-function doPost(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const data = JSON.parse(e.postData.contents);
-
-  sheet.appendRow([
-    new Date(),
-    data.name,
-    data.count,
-    data.message
-  ]);
-
-  return ContentService
-    .createTextOutput(JSON.stringify({ ok: true }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-// Thêm đoạn này để tránh lỗi khi mở link trực tiếp
-function doGet(e) {
-  return ContentService
-    .createTextOutput("Wedding RSVP Web App is running")
-    .setMimeType(ContentService.MimeType.TEXT);
-}
 </script>
 
 </body>
