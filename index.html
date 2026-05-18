@@ -358,7 +358,7 @@ body{
   <source src="nhac-cuoi.mp3" type="audio/mpeg">
 </audio>
 
-<button class="btn music-btn" onclick="toggleMusic()">🎵 Nhạc</button>
+<button class="btn music-btn" id="musicBtn" onclick="toggleMusic()">🎵 Nhạc</button>
 
 <!-- MÀN HÌNH MỞ -->
 <div class="open-screen" id="openScreen">
@@ -375,16 +375,19 @@ body{
 
 <section class="section">
     <div class="title">Thiệp cưới</div>
+    <img src="intro.png" style="width:100%;max-width:600px;margin:20px auto;border-radius:15px;display:block;">
 
     <div class="family-container">
         <div class="family-side">
             <h3>Chú Rể</h3>
+            <img src="p1chure.jpeg" style="width:100%;max-width:200px;border-radius:12px;margin:10px auto;display:block;">
             <div class="side-name" id="groomName">Sopanat Vanichpoonphon</div>
             <div class="parents"><strong>Nhà Trai:</strong><br><span id="groomParents">Ông: Somsak Vanichpoonphon<br>Bà: Sugunya Vanichpoonphon</span></div>
             <div class="address" id="groomAddress">Chatujak, Bangkok, Thailand</div>
         </div>
         <div class="family-side">
             <h3>Cô Dâu</h3>
+            <img src="p1codau.JPG" style="width:100%;max-width:200px;border-radius:12px;margin:10px auto;display:block;">
             <div class="side-name" id="brideName">Phạm Thị Trường Vỹ</div>
             <div class="parents"><strong>Nhà Gái:</strong><br><span id="brideParents">Ông: Phạm Văn Thôi<br>Bà: Phan Thị Kiều Oanh</span></div>
             <div class="address" id="brideAddress">85 Lý Nam Đế, P.Kim Long, TP.Huế</div>
@@ -394,6 +397,7 @@ body{
     <div style="font-size:24px;margin:20px 0;">
         Sopanat 💕 Trường Vỹ
     </div>
+    <img src="duoi_baotin.jpg" style="width:100%;max-width:600px;margin:20px auto;border-radius:15px;display:block;">
     <h2>Lễ Vu Quy diễn ra vào lúc:</h2>
     <h1 style="margin-top:12px;">08:30 | 30.07.2026</h1>
     <div class="countdown" id="countdown"></div>
@@ -410,6 +414,7 @@ body{
     <a class="btn" href="https://www.google.com/maps/place/07+V%E1%BA%A1n+Xu%C3%A2n,+Kim+Long,+Hu%E1%BA%BF,+Th%C3%A0nh+ph%E1%BB%91+Hu%E1%BA%BF+49000,+Vi%E1%BB%87t+Nam/@16.4614515,107.5655921,17z/data=!3m1!4b1!4m6!3m5!1s0x3141a6c9f7956d35:0xfe8f4d71f8d35dd9!8m2!3d16.4614515!4d107.568167!16s%2Fg%2F11j6zyg077?entry=ttu&g_ep=EgoyMDI2MDMwMS4xIKXMDSoASAFQAw%3D%3D" target="_blank">📍 Xem bản đồ</a>
 </section>
 <section class="section">
+    <img src="tren_savetheday.png" style="width:100%;max-width:600px;margin:20px auto 40px;border-radius:15px;display:block;">
     <div class="save-day-title">Save The Day</div>
     <p style="color:#C49B6E;margin-bottom:12px;">Chúng ta sẽ cùng nhau viết nên trang mới của hạnh phúc...</p>
     <div class="calendar-container">
@@ -421,11 +426,18 @@ body{
 <section class="section">
     <h2>Album cưới</h2>
     <div class="gallery">
-        <!-- THAY LINK ẢNH CỦA BẠN -->
-        <img src="pic1.jpg">
-        <img src="pic2.jpg">
-        <img src="pic3.jpg">
-        
+        <img src="a1.JPG">
+        <img src="a2.JPG">
+        <img src="a3.JPG">
+        <img src="a4.jpeg">
+        <img src="a5.JPG">
+        <img src="a6.jpeg">
+        <img src="a7.jpeg">
+        <img src="a8.jpeg">
+        <img src="a9.jpeg">
+        <img src="a10.jpeg">
+        <img src="a11.JPG">
+        <img src="a12.jpeg">
     </div>
 </section>
 
@@ -466,11 +478,14 @@ function openCard(){
 
 // Nhạc
 var music=document.getElementById("bgMusic");
+var musicBtn=document.getElementById("musicBtn");
 function toggleMusic(){
     if(music.paused){
         music.play();
+        musicBtn.textContent="🔊 Nhạc";
     }else{
         music.pause();
+        musicBtn.textContent="🔇 Nhạc";
     }
 }
 
